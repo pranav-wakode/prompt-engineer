@@ -1,6 +1,8 @@
 package com.pranav.promptcraft.presentation.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -13,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -84,6 +87,7 @@ fun HomeScreen(
                     enhancedPrompt = enhancedPrompt,
                     onCopy = { text ->
                         clipboardManager.setText(AnnotatedString(text))
+                        Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
                     },
                     onEdit = { /* TODO: Implement edit functionality */ },
                     onBackToHome = {
@@ -204,7 +208,9 @@ private fun ResultContent(
     onEdit: () -> Unit,
     onBackToHome: () -> Unit
 ) {
-    Column {
+    Column(
+        modifier = Modifier.verticalScroll(rememberScrollState())
+    ) {
         // Header with back button
         Row(
             modifier = Modifier.fillMaxWidth(),

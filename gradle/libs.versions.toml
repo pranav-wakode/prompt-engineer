@@ -18,6 +18,8 @@ playServicesAuth = "21.2.0"
 firebaseAuthKtx = "23.0.0"
 generativeai = "0.7.0"
 googleServices = "4.4.2"
+credentialManager = "1.2.2"
+googleIdCredentials = "1.1.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -46,6 +48,9 @@ firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx",
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 generativeai = { group = "com.google.ai.client.generativeai", name = "generativeai", version.ref = "generativeai" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+androidx-credentials = { group = "androidx.credentials", name = "credentials", version.ref = "credentialManager" }
+androidx-credentials-play-services-auth = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "credentialManager" }
+googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleIdCredentials" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

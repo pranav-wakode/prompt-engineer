@@ -46,7 +46,16 @@ class PromptRepositoryImpl @Inject constructor(
             val response = generativeModel.generateContent(metaPrompt)
             response.text ?: "Error: Unable to generate enhanced prompt"
         } catch (e: Exception) {
-            "Error: ${e.localizedMessage}"
+            val errorMessage = when {
+                e.message?.contains("models/gemini-pro is not found") == true -> 
+                    "Model not found. Please check the API configuration."
+                e.message?.contains("API_KEY_INVALID") == true -> 
+                    "Invalid API key. Please check your Gemini API key."
+                e.message?.contains("RATE_LIMIT_EXCEEDED") == true -> 
+                    "Rate limit exceeded. Please try again later."
+                else -> "Network error: ${e.localizedMessage ?: "Unknown error occurred"}"
+            }
+            errorMessage
         }
     }
 

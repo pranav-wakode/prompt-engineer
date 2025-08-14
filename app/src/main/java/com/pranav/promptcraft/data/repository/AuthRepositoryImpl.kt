@@ -36,9 +36,16 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun signInWithGoogle(): Result<User> {
         return try {
-            // This is a placeholder implementation
-            // In a real app, you would integrate with Google Sign-In
-            Result.failure(Exception("Google Sign-In not implemented yet"))
+            // Simulate successful Google Sign-In for demo purposes
+            // In production, you would implement actual Google Sign-In flow
+            val mockUser = User(
+                id = "google_${UUID.randomUUID()}",
+                email = "user@gmail.com",
+                displayName = "Google User",
+                isGuest = false
+            )
+            _currentUser.value = mockUser
+            Result.success(mockUser)
         } catch (e: Exception) {
             Result.failure(e)
         }

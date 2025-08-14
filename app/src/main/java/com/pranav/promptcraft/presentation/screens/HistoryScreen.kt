@@ -12,6 +12,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -34,6 +36,7 @@ fun HistoryScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val clipboardManager = LocalClipboardManager.current
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -95,6 +98,7 @@ fun HistoryScreen(
                                 prompt = prompt,
                                 onCopy = { text ->
                                     clipboardManager.setText(AnnotatedString(text))
+                                    Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
                                 },
                                 onDelete = {
                                     viewModel.deletePrompt(prompt)
