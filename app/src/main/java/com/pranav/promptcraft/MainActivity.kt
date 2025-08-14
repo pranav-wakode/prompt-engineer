@@ -7,8 +7,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -60,7 +60,7 @@ fun PromptCraftApp() {
         ) {
             // Login Screen
             composable(Destinations.LOGIN) {
-                LoginScreen(
+                GoogleSignInScreen(
                     onNavigateToHome = {
                         navController.navigate(Destinations.HOME) {
                             popUpTo(Destinations.LOGIN) { inclusive = true }
@@ -80,12 +80,12 @@ fun PromptCraftApp() {
                 )
             }
 
-            // History Screen (accessible via bottom nav)
-            composable(Destinations.HISTORY) {
+            // Account Screen (accessible via bottom nav)
+            composable(Destinations.ACCOUNT) {
                 MainAppContent(
                     isDarkMode = isDarkMode,
                     onThemeToggle = { isDarkMode = it },
-                    initialDestination = Destinations.HISTORY
+                    initialDestination = Destinations.ACCOUNT
                 )
             }
 
@@ -124,7 +124,7 @@ fun MainAppContent(
                             Icon(
                                 imageVector = when (item) {
                                     BottomNavItem.HOME -> Icons.Default.Home
-                                    BottomNavItem.HISTORY -> Icons.Default.List
+                                    BottomNavItem.ACCOUNT -> Icons.Default.AccountCircle
                                 },
                                 contentDescription = item.title
                             )
@@ -156,8 +156,8 @@ fun MainAppContent(
                 )
             }
             
-            composable(Destinations.HISTORY) {
-                HistoryScreen()
+            composable(Destinations.ACCOUNT) {
+                AccountScreen()
             }
         }
     }

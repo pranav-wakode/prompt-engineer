@@ -1,7 +1,9 @@
 package com.pranav.promptcraft.presentation.components
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -81,53 +83,73 @@ fun FollowUpQuestionDialog(
     onDismiss: () -> Unit
 ) {
     var answer by remember { mutableStateOf("") }
+    val scrollState = rememberScrollState()
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
+                .heightIn(max = 600.dp) // Limit max height to ensure it fits on screen
                 .padding(16.dp),
             shape = RoundedCornerShape(16.dp)
         ) {
             Column(
-                modifier = Modifier.padding(24.dp)
+                modifier = Modifier
+                    .padding(24.dp)
+                    .verticalScroll(scrollState) // Make content scrollable
             ) {
                 Text(
-                    text = "More Information Needed",
+                    text = "Quick Question",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold
                 )
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
-                Text(
-                    text = question,
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                // Scrollable question text with max height
+                Box(
+                    modifier = Modifier
+                        .heightIn(max = 200.dp) // Limit question height
+                ) {
+                    Text(
+                        text = question,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 OutlinedTextField(
                     value = answer,
                     onValueChange = { answer = it },
-                    label = { Text("Your answer") },
+                    label = { Text("Your answer (optional)") },
+                    placeholder = { Text("Enter additional details...") },
                     modifier = Modifier.fillMaxWidth(),
-                    minLines = 3
+                    minLines = 3,
+                    maxLines = 5
                 )
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
+                // Action buttons
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    TextButton(onClick = onDismiss) {
-                        Text("Cancel")
+                    OutlinedButton(
+                        onClick = {
+                            // Generate prompt without additional info
+                            onAnswer("")
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Skip")
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
+                    
                     Button(
                         onClick = { onAnswer(answer) },
-                        enabled = answer.isNotBlank()
+                        modifier = Modifier.weight(1f)
                     ) {
                         Text("Continue")
                     }

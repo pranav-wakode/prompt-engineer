@@ -61,14 +61,19 @@ class PromptRepositoryImpl @Inject constructor(
 
     private fun buildMetaPrompt(userPrompt: String, selectedTypes: String): String {
         return """
-            You are an expert prompt engineer. Your task is to enhance the following user prompt to be highly detailed, specific, and effective for a generative AI.
-
-            **Instructions:**
-            1. Analyze the user's input. If the user has selected specific prompt engineering techniques ($selectedTypes), you must apply them. If they have selected 'Auto', you must first determine the best technique(s) to use.
-            2. **Crucially, if the user's initial prompt is too vague to create a high-quality enhancement (e.g., it lacks context, a clear goal, or specifics), you MUST NOT generate a weak enhancement. Instead, your entire response must be ONLY a single, clarifying follow-up question to get the necessary information from the user.**
-            3. If the prompt is clear enough to proceed, generate the fully enhanced, detailed prompt directly.
-
-            Here is the user's input: '$userPrompt'
+            You are an expert prompt engineer. Analyze the following user prompt and either:
+            
+            1. If the prompt is too vague (lacks context, purpose, or specific details), respond with ONLY a single, brief clarifying question (max 20 words).
+            2. If the prompt has enough detail, create a comprehensive enhanced version following these rules:
+               - Start with "Enhanced Prompt: "
+               - Make it detailed, specific, and well-structured
+               - Apply the technique: $selectedTypes
+               - Include context, format requirements, and expected output style
+               - Make it 2-3x longer than the original with clear instructions
+            
+            User's original prompt: "$userPrompt"
+            
+            Respond with either a clarifying question OR an enhanced prompt (starting with "Enhanced Prompt: "):
         """.trimIndent()
     }
 }

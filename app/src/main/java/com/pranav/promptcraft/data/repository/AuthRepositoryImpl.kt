@@ -36,18 +36,39 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun signInWithGoogle(): Result<User> {
         return try {
-            // Simulate successful Google Sign-In for demo purposes
-            // In production, you would implement actual Google Sign-In flow
-            val mockUser = User(
-                id = "google_${UUID.randomUUID()}",
-                email = "user@gmail.com",
-                displayName = "Google User",
+            // Check if user is already signed in to Firebase
+            val currentUser = firebaseAuth.currentUser
+            if (currentUser != null) {
+                val user = User(
+                    id = currentUser.uid,
+                    email = currentUser.email,
+                    displayName = currentUser.displayName ?: "User",
+                    isGuest = false
+                )
+                _currentUser.value = user
+                return Result.success(user)
+            }
+            
+            // This method is now mainly for checking existing sign-in
+            // The actual sign-in happens in the Compose screen with proper Google Sign-In flow
+            Result.failure(Exception("No user signed in"))
+        } catch (e: Exception) {
+            Result.failure(Exception("Google Sign-In failed: ${e.message}"))
+        }
+    }
+    
+    override suspend fun signInWithGoogleSuccess(uid: String, email: String?, displayName: String?): Result<User> {
+        return try {
+            val user = User(
+                id = uid,
+                email = email,
+                displayName = displayName ?: "Google User",
                 isGuest = false
             )
-            _currentUser.value = mockUser
-            Result.success(mockUser)
+            _currentUser.value = user
+            Result.success(user)
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception("Failed to process Google Sign-In: ${e.message}"))
         }
     }
 

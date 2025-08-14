@@ -6,7 +6,7 @@ package com.pranav.promptcraft.presentation.navigation
 object Destinations {
     const val LOGIN = "login"
     const val HOME = "home"
-    const val HISTORY = "history"
+    const val ACCOUNT = "account"
     const val SETTINGS = "settings"
     const val RESULT = "result"
 }
@@ -20,5 +20,5 @@ enum class BottomNavItem(
     val icon: String // We'll use Material Icons
 ) {
     HOME(Destinations.HOME, "Home", "home"),
-    HISTORY(Destinations.HISTORY, "History", "history")
+    ACCOUNT(Destinations.ACCOUNT, "Account", "account_circle")
 }

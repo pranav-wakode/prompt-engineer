@@ -2,6 +2,7 @@ package com.pranav.promptcraft.di
 
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.firebase.auth.FirebaseAuth
+import com.pranav.promptcraft.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,10 +24,9 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideGenerativeModel(): GenerativeModel {
-        // Using your actual Gemini API key - make sure you've added it to NetworkModule.kt
         return GenerativeModel(
-            modelName = "gemini-1.5-flash", // Updated to current model
-            apiKey = "AIzaSyAdseX58GVtZl0axIn7PbR6PBMWMBX6k48" // Replace with your actual API key
+            modelName = "gemini-1.5-flash",
+            apiKey = BuildConfig.GEMINI_API_KEY
         )
     }
 }

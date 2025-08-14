@@ -88,6 +88,37 @@ class AuthViewModel @Inject constructor(
     fun clearError() {
         _uiState.value = _uiState.value.copy(error = null)
     }
+    
+    fun startGoogleSignIn() {
+        _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+    }
+    
+    fun onGoogleSignInSuccess(uid: String, email: String?, displayName: String?) {
+        viewModelScope.launch {
+            val result = authRepository.signInWithGoogleSuccess(uid, email, displayName)
+            result.fold(
+                onSuccess = { user ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        isSignedIn = true
+                    )
+                },
+                onFailure = { exception ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = exception.localizedMessage
+                    )
+                }
+            )
+        }
+    }
+    
+    fun onGoogleSignInError(errorMessage: String) {
+        _uiState.value = _uiState.value.copy(
+            isLoading = false,
+            error = errorMessage
+        )
+    }
 }
 
 data class AuthUiState(

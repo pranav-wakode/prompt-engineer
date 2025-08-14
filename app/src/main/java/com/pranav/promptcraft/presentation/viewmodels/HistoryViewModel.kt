@@ -26,7 +26,7 @@ class HistoryViewModel @Inject constructor(
         loadHistory()
     }
 
-    private fun loadHistory() {
+    fun loadHistory() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             try {

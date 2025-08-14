@@ -89,9 +89,11 @@ fun HomeScreen(
                         clipboardManager.setText(AnnotatedString(text))
                         Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
                     },
-                    onEdit = { /* TODO: Implement edit functionality */ },
-                    onBackToHome = {
-                        viewModel.clearResult()
+                    onEdit = { 
+                        viewModel.editPrompt(uiState.inputPrompt)
+                    },
+                    onNewPrompt = {
+                        viewModel.clearPrompt()
                     }
                 )
             } else {
@@ -206,7 +208,7 @@ private fun ResultContent(
     enhancedPrompt: String,
     onCopy: (String) -> Unit,
     onEdit: () -> Unit,
-    onBackToHome: () -> Unit
+    onNewPrompt: () -> Unit
 ) {
     Column(
         modifier = Modifier.verticalScroll(rememberScrollState())
@@ -223,7 +225,7 @@ private fun ResultContent(
                 fontWeight = FontWeight.Bold
             )
             
-            TextButton(onClick = onBackToHome) {
+            TextButton(onClick = onNewPrompt) {
                 Text("New Prompt")
             }
         }

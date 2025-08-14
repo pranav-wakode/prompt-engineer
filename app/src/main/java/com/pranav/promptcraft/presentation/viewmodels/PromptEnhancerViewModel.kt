@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+// import kotlinx.serialization.MissingFieldException // This might not be available
+import java.net.SocketTimeoutException
+import java.io.IOException
 import javax.inject.Inject
 
 /**
@@ -68,8 +71,8 @@ class PromptEnhancerViewModel @Inject constructor(
                     selectedTypeNames
                 )
 
-                // Check if the response is a follow-up question
-                if (isFollowUpQuestion(enhancedText)) {
+                // Check if the response is a follow-up question and we haven't asked one yet
+                if (isFollowUpQuestion(enhancedText) && !currentState.followUpAsked) {
                     _uiState.value = currentState.copy(
                         isLoading = false,
                         followUpQuestion = enhancedText,
@@ -87,9 +90,82 @@ class PromptEnhancerViewModel @Inject constructor(
                     _uiState.value = currentState.copy(
                         isLoading = false,
                         enhancedPrompt = enhancedText,
-                        showResult = true
+                        showResult = true,
+                        followUpAsked = false // Reset for next prompt
                     )
                 }
+            } catch (e: Exception) {
+                val errorMessage = when (e) {
+                    is SocketTimeoutException -> {
+                        "Request timed out. Please check your connection and try again."
+                    }
+                    is IOException -> {
+                        "Network error. Please check your internet connection."
+                    }
+                    else -> {
+                        // Handle 503 Service Unavailable, MissingFieldException and other API errors
+                        val message = e.message ?: e.localizedMessage ?: "Unknown error"
+                        when {
+                            message.contains("503") || message.contains("overloaded") || message.contains("UNAVAILABLE") || 
+                            message.contains("MissingFieldException") || e.javaClass.simpleName.contains("MissingField") -> {
+                                "The service is busy, please try again later."
+                            }
+                            message.contains("401") || message.contains("API_KEY_INVALID") -> {
+                                "Invalid API key. Please check your configuration."
+                            }
+                            message.contains("429") || message.contains("RATE_LIMIT_EXCEEDED") -> {
+                                "Too many requests. Please wait a moment and try again."
+                            }
+                            message.contains("400") || message.contains("INVALID_ARGUMENT") -> {
+                                "Invalid request. Please check your prompt and try again."
+                            }
+                            else -> {
+                                "Something went wrong. Please try again."
+                            }
+                        }
+                    }
+                }
+                
+                _uiState.value = currentState.copy(
+                    isLoading = false,
+                    error = errorMessage
+                )
+            }
+        }
+    }
+
+    private fun forceEnhancePrompt() {
+        val currentState = _uiState.value
+        if (currentState.inputPrompt.isBlank()) return
+
+        viewModelScope.launch {
+            _uiState.value = currentState.copy(isLoading = true, error = null)
+
+            try {
+                val selectedTypeNames = currentState.selectedPromptTypes.map { it.displayName }
+                
+                // Force enhancement by using a special prompt that ensures enhancement
+                val enhanceOnlyPrompt = "Enhanced Prompt: ${currentState.inputPrompt}"
+                
+                val enhancedText = promptRepository.enhancePrompt(
+                    enhanceOnlyPrompt,
+                    selectedTypeNames
+                )
+
+                // Save to history and navigate to result
+                val prompt = Prompt(
+                    originalPrompt = currentState.inputPrompt,
+                    enhancedPrompt = enhancedText,
+                    promptTypes = selectedTypeNames
+                )
+                promptRepository.insertPrompt(prompt)
+
+                _uiState.value = currentState.copy(
+                    isLoading = false,
+                    enhancedPrompt = enhancedText,
+                    showResult = true,
+                    followUpAsked = false // Reset for next prompt
+                )
             } catch (e: Exception) {
                 _uiState.value = currentState.copy(
                     isLoading = false,
@@ -101,16 +177,23 @@ class PromptEnhancerViewModel @Inject constructor(
 
     fun answerFollowUpQuestion(answer: String) {
         val currentState = _uiState.value
-        val combinedPrompt = "${currentState.inputPrompt}\n\nAdditional context: $answer"
+        
+        // Always force generation of enhanced prompt, regardless of answer
+        val finalPrompt = if (answer.isNotBlank()) {
+            "${currentState.inputPrompt}\n\nAdditional context: $answer"
+        } else {
+            currentState.inputPrompt
+        }
         
         _uiState.value = currentState.copy(
-            inputPrompt = combinedPrompt,
+            inputPrompt = finalPrompt,
             showFollowUpDialog = false,
-            followUpQuestion = null
+            followUpQuestion = null,
+            followUpAsked = true // Mark that follow-up was already asked
         )
         
-        // Enhance with the updated prompt
-        enhancePrompt()
+        // Force enhancement without further follow-ups
+        forceEnhancePrompt()
     }
 
     fun dismissFollowUpDialog() {
@@ -131,6 +214,16 @@ class PromptEnhancerViewModel @Inject constructor(
     fun clearError() {
         _uiState.value = _uiState.value.copy(error = null)
     }
+    
+    fun clearPrompt() {
+        _uiState.value = PromptEnhancerUiState()
+    }
+    
+    fun editPrompt(originalPrompt: String) {
+        _uiState.value = PromptEnhancerUiState(
+            inputPrompt = originalPrompt
+        )
+    }
 
     private fun isFollowUpQuestion(response: String): Boolean {
         // Simple heuristic to detect if response is a question
@@ -149,5 +242,6 @@ data class PromptEnhancerUiState(
     val showResult: Boolean = false,
     val followUpQuestion: String? = null,
     val showFollowUpDialog: Boolean = false,
+    val followUpAsked: Boolean = false,
     val error: String? = null
 )
