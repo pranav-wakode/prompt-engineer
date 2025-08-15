@@ -153,12 +153,10 @@ fun EnhancedPromptScreen(
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Text(
-                                text = if (state.isQuestion) "Clarification Needed" else "Enhanced Prompt",
+                                text = "Enhanced Prompt",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = if (state.isComplete) 
-                                    MaterialTheme.colorScheme.primary 
-                                else MaterialTheme.colorScheme.secondary
+                                color = MaterialTheme.colorScheme.primary
                             )
                             
                             Text(
@@ -167,50 +165,15 @@ fun EnhancedPromptScreen(
                                 lineHeight = MaterialTheme.typography.bodyMedium.lineHeight
                             )
                             
-                            // Follow-up input (only show if it's a question and not complete)
-                            if (state.isQuestion && !state.isComplete) {
-                                Spacer(modifier = Modifier.height(8.dp))
-                                
-                                OutlinedTextField(
-                                    value = followUpText,
-                                    onValueChange = { followUpText = it },
-                                    label = { Text("Your answer") },
-                                    placeholder = { Text("Type your response here...") },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    minLines = 2,
-                                    maxLines = 3
-                                )
-                                
-                                Button(
-                                    onClick = {
-                                        enhanceViewModel.sendFollowUp(followUpText)
-                                        followUpText = ""
-                                    },
-                                    modifier = Modifier.align(Alignment.End),
-                                    enabled = followUpText.isNotBlank()
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Send,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text("Send Answer")
-                                }
-                            }
-                            
-                            // Reset button (show when complete or error)
-                            if (state.isComplete) {
-                                OutlinedButton(
-                                    onClick = {
-                                        enhanceViewModel.resetEnhancement()
-                                        promptText = ""
-                                        followUpText = ""
-                                    },
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Text("Start New Enhancement")
-                                }
+                            // Reset button
+                            OutlinedButton(
+                                onClick = {
+                                    enhanceViewModel.resetEnhancement()
+                                    promptText = ""
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("Start New Enhancement")
                             }
                         }
                     }

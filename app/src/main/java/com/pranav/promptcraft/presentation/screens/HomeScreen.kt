@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.pranav.promptcraft.domain.model.PromptType
 import com.pranav.promptcraft.presentation.components.ErrorMessage
-import com.pranav.promptcraft.presentation.components.FollowUpQuestionDialog
 import com.pranav.promptcraft.presentation.components.LoadingIndicator
 import com.pranav.promptcraft.presentation.viewmodels.PromptEnhancerViewModel
 
@@ -39,73 +38,39 @@ fun HomeScreen(
     val clipboardManager = LocalClipboardManager.current
     val context = LocalContext.current
 
-    // Handle follow-up question dialog
-    if (uiState.showFollowUpDialog && uiState.followUpQuestion != null) {
-        val followUpQuestion = uiState.followUpQuestion ?: ""
-        FollowUpQuestionDialog(
-            question = followUpQuestion,
-            onAnswer = { answer ->
-                viewModel.answerFollowUpQuestion(answer)
-            },
-            onDismiss = {
-                viewModel.dismissFollowUpDialog()
-            }
-        )
-    }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { 
-                    Text(
-                        text = "PromptCraft",
-                        fontWeight = FontWeight.Bold
-                    )
+    // No Scaffold needed here since MainActivity provides the TopAppBar
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        if (uiState.showResult && uiState.enhancedPrompt != null) {
+            // Show result
+            val enhancedPrompt = uiState.enhancedPrompt ?: ""
+            ResultContent(
+                originalPrompt = uiState.inputPrompt,
+                enhancedPrompt = enhancedPrompt,
+                onCopy = { text ->
+                    clipboardManager.setText(AnnotatedString(text))
+                    Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
                 },
-                actions = {
-                    IconButton(onClick = onNavigateToSettings) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = "Settings"
-                        )
-                    }
+                onEdit = { 
+                    viewModel.editPrompt(uiState.inputPrompt)
+                },
+                onNewPrompt = {
+                    viewModel.clearPrompt()
                 }
             )
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp)
-        ) {
-            if (uiState.showResult && uiState.enhancedPrompt != null) {
-                // Show result
-                val enhancedPrompt = uiState.enhancedPrompt ?: ""
-                ResultContent(
-                    originalPrompt = uiState.inputPrompt,
-                    enhancedPrompt = enhancedPrompt,
-                    onCopy = { text ->
-                        clipboardManager.setText(AnnotatedString(text))
-                        Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
-                    },
-                    onEdit = { 
-                        viewModel.editPrompt(uiState.inputPrompt)
-                    },
-                    onNewPrompt = {
-                        viewModel.clearPrompt()
-                    }
-                )
-            } else {
-                // Show main prompt enhancement UI
-                PromptEnhancementContent(
-                    uiState = uiState,
-                    onInputChange = viewModel::updateInputPrompt,
-                    onTypeSelect = viewModel::selectPromptType,
-                    onEnhance = viewModel::enhancePrompt,
-                    onClearError = viewModel::clearError
-                )
-            }
+        } else {
+            // Show main prompt enhancement UI
+            PromptEnhancementContent(
+                uiState = uiState,
+                onInputChange = viewModel::updateInputPrompt,
+                onTypeSelect = viewModel::selectPromptType,
+                onEnhance = viewModel::enhancePrompt,
+                onClearError = viewModel::clearError
+            )
         }
     }
 }

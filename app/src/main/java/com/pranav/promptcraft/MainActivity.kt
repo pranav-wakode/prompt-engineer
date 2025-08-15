@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -157,6 +158,9 @@ fun PromptCraftApp(remoteConfig: FirebaseRemoteConfig) {
                     isDarkMode = isDarkMode,
                     onThemeToggle = { isDarkMode = it },
                     initialDestination = Destinations.ACCOUNT,
+                    onNavigateToSettings = {
+                        navController.navigate(Destinations.SETTINGS)
+                    },
                     showNotificationIcon = showNotificationIcon,
                     notificationHasBadge = notificationHasBadge,
                     onNotificationClick = { showNotificationSheet = true }
@@ -215,10 +219,16 @@ fun MainAppContent(
     
     Scaffold(
         topBar = {
-            if (showNotificationIcon) {
-                TopAppBar(
-                    title = { Text("PromptCraft") },
-                    actions = {
+            TopAppBar(
+                title = { 
+                    Text(
+                        text = "PromptCraft",
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                actions = {
+                    // Notification icon (conditionally displayed)
+                    if (showNotificationIcon) {
                         BadgedBox(
                             badge = {
                                 if (notificationHasBadge) {
@@ -234,8 +244,18 @@ fun MainAppContent(
                             }
                         }
                     }
-                )
-            }
+                    
+                    // Settings icon (always displayed)
+                    onNavigateToSettings?.let { settingsCallback ->
+                        IconButton(onClick = settingsCallback) {
+                            Icon(
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = "Settings"
+                            )
+                        }
+                    }
+                }
+            )
         },
         bottomBar = {
             NavigationBar {

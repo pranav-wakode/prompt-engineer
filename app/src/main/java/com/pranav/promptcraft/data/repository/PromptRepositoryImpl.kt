@@ -1,10 +1,8 @@
 package com.pranav.promptcraft.data.repository
 
-import com.google.ai.client.generativeai.Chat
 import com.google.ai.client.generativeai.GenerativeModel
 import com.pranav.promptcraft.data.database.PromptDao
 import com.pranav.promptcraft.domain.model.Prompt
-import com.pranav.promptcraft.domain.repository.ChatWithResponse
 import com.pranav.promptcraft.domain.repository.PromptRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -35,7 +33,7 @@ class PromptRepositoryImpl @Inject constructor(
         promptDao.deletePrompt(prompt)
     }
 
-    override suspend fun startEnhancementChat(originalPrompt: String, selectedTypes: List<String>): ChatWithResponse {
+    override suspend fun enhancePrompt(originalPrompt: String, selectedTypes: List<String>): String {
         val typesText = if (selectedTypes.contains("Auto")) {
             "Auto"
         } else {
@@ -43,14 +41,12 @@ class PromptRepositoryImpl @Inject constructor(
         }
 
         val metaPrompt = buildMetaPrompt(originalPrompt, typesText)
-        val chat = generativeModel.startChat()
         
         return try {
-            val response = chat.sendMessage(metaPrompt)
-            val initialResponse = response.text ?: "Error: Unable to generate initial response"
-            ChatWithResponse(chat, initialResponse)
+            val response = generativeModel.generateContent(metaPrompt)
+            response.text ?: "Error: Unable to generate enhanced prompt"
         } catch (e: Exception) {
-            val errorMessage = when {
+            when {
                 e.message?.contains("models/gemini-pro is not found") == true -> 
                     "Model not found. Please check the API configuration."
                 e.message?.contains("API_KEY_INVALID") == true -> 
@@ -59,50 +55,22 @@ class PromptRepositoryImpl @Inject constructor(
                     "Rate limit exceeded. Please try again later."
                 else -> "Network error: ${e.localizedMessage ?: "Unknown error occurred"}"
             }
-            ChatWithResponse(chat, errorMessage)
         }
-    }
-
-    override suspend fun sendFollowUpMessage(chat: Chat, message: String): String {
-        return try {
-            val response = chat.sendMessage(message)
-            response.text ?: "Error: Unable to generate response"
-        } catch (e: Exception) {
-            val errorMessage = when {
-                e.message?.contains("models/gemini-pro is not found") == true -> 
-                    "Model not found. Please check the API configuration."
-                e.message?.contains("API_KEY_INVALID") == true -> 
-                    "Invalid API key. Please check your Gemini API key."
-                e.message?.contains("RATE_LIMIT_EXCEEDED") == true -> 
-                    "Rate limit exceeded. Please try again later."
-                else -> "Network error: ${e.localizedMessage ?: "Unknown error occurred"}"
-            }
-            errorMessage
-        }
-    }
-
-    // Temporary compatibility method - will be removed
-    @Deprecated("Use EnhanceViewModel with startEnhancementChat instead")
-    override suspend fun enhancePrompt(originalPrompt: String, selectedTypes: List<String>): String {
-        val chatWithResponse = startEnhancementChat(originalPrompt, selectedTypes)
-        return chatWithResponse.initialResponse
     }
     
     private fun buildMetaPrompt(userPrompt: String, selectedTypes: String): String {
         return """
-            You are an expert prompt engineer. Analyze the following user prompt and either:
-            
-            1. If the prompt is too vague (lacks context, purpose, or specific details), respond with ONLY a single, brief clarifying question (max 20 words).
-            2. If the prompt has enough detail, create a comprehensive enhanced version following these rules:
-               - Start with "Enhanced Prompt: "
-               - Make it detailed, specific, and well-structured
-               - Apply the technique: $selectedTypes
-               - Include context, format requirements, and expected output style
-               - Make it 2-3x longer than the original with clear instructions
+            You are an expert prompt engineer. Your task is to take a user's prompt and enhance it based on a specified technique.
+            - **DO NOT** ask clarifying questions.
+            - **ALWAYS** respond with the enhanced prompt, starting with the prefix "Enhanced Prompt: ".
+            - Make the new prompt detailed, specific, and well-structured.
+            - Apply the following technique: $selectedTypes
+            - Include context, format requirements, and expected output style where appropriate.
+            - Make it 2-3x longer than the original with clear, actionable instructions.
             
             User's original prompt: "$userPrompt"
             
-            Respond with either a clarifying question OR an enhanced prompt (starting with "Enhanced Prompt: "):
+            Enhanced Prompt:
         """.trimIndent()
     }
 }
