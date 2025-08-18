@@ -231,7 +231,7 @@ fun MainAppContent(
                                         Badge(
                                             modifier = Modifier
                                                 .align(Alignment.TopEnd)
-                                                .offset(x = (-4).dp, y = 4.dp)
+                                                .offset(x = (-14).dp, y = 14.dp)
                                         )
                                     }
                                 }
