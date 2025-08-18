@@ -220,17 +220,18 @@ fun MainAppContent(
                         Destinations.HOME -> {
                             // Notification icon (conditionally displayed)
                             if (showNotificationIcon) {
-                                BadgedBox(
-                                    badge = {
-                                        if (notificationHasBadge) {
-                                            Badge()
-                                        }
-                                    }
-                                ) {
+                                Box {
                                     IconButton(onClick = onNotificationClick) {
                                         Icon(
                                             imageVector = Icons.Default.Notifications,
                                             contentDescription = "Notifications"
+                                        )
+                                    }
+                                    if (notificationHasBadge) {
+                                        Badge(
+                                            modifier = Modifier
+                                                .align(Alignment.TopEnd)
+                                                .offset(x = (-4).dp, y = 4.dp)
                                         )
                                     }
                                 }

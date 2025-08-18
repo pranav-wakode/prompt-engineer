@@ -86,112 +86,109 @@ private fun PromptEnhancementContent(
     onEnhance: () -> Unit,
     onClearError: () -> Unit
 ) {
-    // Input field
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "Enter your prompt",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-            
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            OutlinedTextField(
-                value = uiState.inputPrompt,
-                onValueChange = onInputChange,
-                placeholder = { Text("Type your initial prompt here...") },
+        // Input field
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = "Enter your prompt",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                OutlinedTextField(
+                    value = uiState.inputPrompt,
+                    onValueChange = onInputChange,
+                    placeholder = { Text("Type your initial prompt here...") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 120.dp),
+                    minLines = 4
+                )
+            }
+        }
+
+        // Prompt type selection
+        Text(
+            text = "Prompt Type",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+        
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(horizontal = 4.dp)
+        ) {
+            items(PromptType.values()) { type ->
+                FilterChip(
+                    onClick = { onTypeSelect(type) },
+                    label = { Text(type.displayName) },
+                    selected = uiState.selectedPromptTypes.contains(type),
+                    modifier = Modifier.padding(horizontal = 2.dp)
+                )
+            }
+        }
+
+        // Output length selection
+        Text(
+            text = "Output Length",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+        
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(horizontal = 4.dp)
+        ) {
+            items(PromptLength.values()) { length ->
+                FilterChip(
+                    onClick = { onLengthSelect(length) },
+                    label = { Text(length.displayName) },
+                    selected = uiState.selectedLength == length,
+                    modifier = Modifier.padding(horizontal = 2.dp)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Enhance button
+        if (uiState.isLoading) {
+            LoadingIndicator(text = "Enhancing your prompt...")
+        } else {
+            Button(
+                onClick = onEnhance,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(min = 120.dp),
-                minLines = 4
+                    .height(56.dp),
+                enabled = uiState.inputPrompt.isNotBlank(),
+                shape = RoundedCornerShape(28.dp)
+            ) {
+                Text(
+                    text = "Enhance Prompt",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+
+        // Error message
+        uiState.error?.let { error ->
+            ErrorMessage(
+                message = error,
+                onRetry = onClearError
             )
         }
-    }
-
-    Spacer(modifier = Modifier.height(24.dp))
-
-    // Prompt type selection
-    Text(
-        text = "Prompt Type",
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.Bold
-    )
-    
-    Spacer(modifier = Modifier.height(8.dp))
-    
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(horizontal = 4.dp)
-    ) {
-        items(PromptType.values()) { type ->
-            FilterChip(
-                onClick = { onTypeSelect(type) },
-                label = { Text(type.displayName) },
-                selected = uiState.selectedPromptTypes.contains(type),
-                modifier = Modifier.padding(horizontal = 2.dp)
-            )
-        }
-    }
-
-    Spacer(modifier = Modifier.height(24.dp))
-
-    // Output length selection
-    Text(
-        text = "Output Length",
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.Bold
-    )
-    
-    Spacer(modifier = Modifier.height(8.dp))
-    
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(horizontal = 4.dp)
-    ) {
-        items(PromptLength.values()) { length ->
-            FilterChip(
-                onClick = { onLengthSelect(length) },
-                label = { Text(length.displayName) },
-                selected = uiState.selectedLength == length,
-                modifier = Modifier.padding(horizontal = 2.dp)
-            )
-        }
-    }
-
-    Spacer(modifier = Modifier.height(32.dp))
-
-    // Enhance button
-    if (uiState.isLoading) {
-        LoadingIndicator(text = "Enhancing your prompt...")
-    } else {
-        Button(
-            onClick = onEnhance,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            enabled = uiState.inputPrompt.isNotBlank(),
-            shape = RoundedCornerShape(28.dp)
-        ) {
-            Text(
-                text = "Enhance Prompt",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-        }
-    }
-
-    Spacer(modifier = Modifier.height(16.dp))
-
-    // Error message
-    uiState.error?.let { error ->
-        ErrorMessage(
-            message = error,
-            onRetry = onClearError
-        )
     }
 }
 
