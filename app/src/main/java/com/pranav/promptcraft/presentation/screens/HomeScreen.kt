@@ -283,7 +283,7 @@ private fun ResultContent(
                 onClick = onEdit,
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Edit")
+                Text("Edit Original")
             }
         }
     }

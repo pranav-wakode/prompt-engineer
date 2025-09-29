@@ -77,7 +77,7 @@ class PromptRepositoryImpl @Inject constructor(
         return """
             You are an expert prompt engineer. Your task is to take a user's prompt and enhance it.
             - **DO NOT** ask clarifying questions.
-            - **ALWAYS** respond with the enhanced prompt, starting with the prefix "Enhanced Prompt: ".
+            - **ALWAYS** respond with the enhanced prompt.
             - **Generate a response with a "${promptLength.displayName}" length.** $lengthInstruction
             - Make the new prompt detailed, specific, and well-structured.
             - Apply the following technique: $selectedTypes
