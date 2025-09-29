@@ -24,19 +24,6 @@ PromptCraft is a modern Android application that helps users create high-quality
 - **Coroutines & Flows**: Asynchronous operations and reactive UI
 - **Room Database**: Local data persistence for history
 
-## Tech Stack
-
-- **Language**: Kotlin
-- **UI**: Jetpack Compose + Material 3
-- **Architecture**: MVVM with Repository pattern
-- **Dependency Injection**: Hilt
-- **Database**: Room
-- **Navigation**: Jetpack Navigation Compose
-- **Async**: Kotlin Coroutines + Flows
-- **Authentication**: Firebase Authentication
-- **AI Integration**: Google Gemini API
-- **Version Control**: Git
-
 ## Usage
 
 ### First Launch
@@ -45,7 +32,7 @@ PromptCraft is a modern Android application that helps users create high-quality
 
 <p align="center">
   <img src="./screenshots/login.jpg" width="200" alt="Login Screen">
-  <img src="./screenshots/home.jpg" width="200" alt="Home Screen">
+  &nbsp;&nbsp;&nbsp;<img src="./screenshots/home.jpg" width="200" alt="Home Screen">
 </p>
 
 ### Enhancing Prompts
@@ -57,7 +44,7 @@ PromptCraft is a modern Android application that helps users create high-quality
 
 <p align="center">
   <img src="./screenshots/prompt.jpg" width="200" alt="Initial Prompt Screen">
-  <img src="./screenshots/enhanced_prompt.jpg" width="200" alt="Enhanced Prompt Screen">
+  &nbsp;&nbsp;&nbsp;<img src="./screenshots/enhanced_prompt.jpg" width="200" alt="Enhanced Prompt Screen">
 </p>
 
 ### Viewing History
@@ -79,6 +66,19 @@ PromptCraft is a modern Android application that helps users create high-quality
 <p align="center">
   <img src="./screenshots/settings.jpg" width="200" alt="Settings Screen">
 </p>
+
+## Tech Stack
+
+- **Language**: Kotlin
+- **UI**: Jetpack Compose + Material 3
+- **Architecture**: MVVM with Repository pattern
+- **Dependency Injection**: Hilt
+- **Database**: Room
+- **Navigation**: Jetpack Navigation Compose
+- **Async**: Kotlin Coroutines + Flows
+- **Authentication**: Firebase Authentication
+- **AI Integration**: Google Gemini API
+- **Version Control**: Git
 
 ## Project Structure
 
