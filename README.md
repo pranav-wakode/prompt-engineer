@@ -55,7 +55,7 @@ PromptCraft is a modern Android application that helps users create high-quality
 5. Delete unwanted prompts
 
 <p align="center">
-  <img src="./screenshots/account.jpg" width="200" alt="History Screen">
+  <img src="screenshots/history.jpg" width="200" alt="History Screen">
 </p>
 
 ### Settings
