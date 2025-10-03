@@ -14,10 +14,11 @@
 .cxx
 .kotlin
 local.properties
-
+app/build
 
 # Firebase
 google-services.json
+app/src/google-services.json
 
 # API Keys (if stored in files)
 api-keys.properties

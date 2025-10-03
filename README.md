@@ -113,14 +113,12 @@ git clone https://github.com/wakodepranav2005-git/prompt-engineer.git
 cd prompt-engineer
 ```
 
-### 2. Configure Google Gemini API
-1. Get a Gemini API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. Open `NetworkModule.kt` and replace `"your-api-key-here"` with your actual API key:
-```kotlin
-return GenerativeModel(
-    modelName = "gemini-pro",
-    apiKey = "YOUR_ACTUAL_API_KEY_HERE"
-)
+### 2. Set Up Your Google Gemini API Key
+1. This project uses local.properties to handle secret keys securely.
+2. Create a file named local.properties in the root directory of the project.
+3. Add your Gemini API key to this file:
+```bash
+GEMINI_API_KEY=AIz......................................
 ```
 
 ### 3. Configure Firebase (Optional - for Google Sign-In)
@@ -146,25 +144,6 @@ return GenerativeModel(
 - Abstract interfaces in domain layer
 - Concrete implementations in data layer
 
-### Dependency Injection
-- Hilt provides dependencies across the app
-- Modular setup with separate modules for database, network, and repositories
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## Security Notes
-
-- Store API keys securely in production
-- Implement proper authentication flow for production use
-- Consider implementing rate limiting for API calls
-- Validate and sanitize user inputs
-
 ## Future Enhancements
 
 - [ ] Implement proper Google Sign-In flow
@@ -174,7 +153,3 @@ return GenerativeModel(
 - [ ] Advanced prompt analytics
 - [ ] Offline mode capabilities
 - [ ] Prompt sharing features
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
