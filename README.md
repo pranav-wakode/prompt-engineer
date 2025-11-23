@@ -109,7 +109,7 @@ app/src/main/java/com/pranav/promptcraft/
 
 ### 1. Clone and Setup Project
 ```bash
-git clone https://github.com/wakodepranav2005-git/prompt-engineer.git
+https://github.com/pranav-wakode/prompt-engineer.git
 cd prompt-engineer
 ```
 
